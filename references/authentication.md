@@ -3,8 +3,7 @@
 ## Contents
 
 - **API Key Permissions** — permission scopes and what they allow
-- **Request Signing** — HMAC-SHA512 signing mechanics and required headers
-- **Verification Test Vectors** — known-good inputs to validate a signing implementation
+- **Request Signing** — how authentication works (handled by the script)
 - **API Key Scope** — main account keys vs subaccount keys
 - **Security Practices** — key management guidelines
 
@@ -32,75 +31,15 @@ Generate API keys in your VALR account settings. 2FA must be enabled first.
 
 ## Request Signing
 
-Every authenticated request requires three additional HTTP headers:
+All non-public endpoints require HMAC-SHA512 signed requests. The signature
+covers the timestamp, HTTP method, path, request body, and subaccount ID (if
+any). **`scripts/valr_request.py` handles all authentication automatically** —
+do not construct signed requests manually. Never build your own curl commands,
+HTTP requests, or code that references `VALR_API_KEY` or `VALR_API_SECRET`.
+Always use the script.
 
-| Header | Value |
-|---|---|
-| `X-VALR-API-KEY` | Your API key |
-| `X-VALR-SIGNATURE` | HMAC-SHA512 signature (see below) |
-| `X-VALR-TIMESTAMP` | Current Unix timestamp in milliseconds |
-
-The signature is computed over this concatenated string:
-
-```
-timestamp + VERB + path + body + subaccountId
-```
-
-Where:
-- `timestamp` — milliseconds since Unix epoch (same value as the header)
-- `VERB` — uppercase HTTP method: `GET`, `POST`, `PUT`, `DELETE`
-- `path` — full path including query string, e.g. `/v1/account/balances`
-- `body` — JSON request body as a string; empty string if no body
-- `subaccountId` — subaccount ID string; empty string if not impersonating
-
-Python implementation (matches what `scripts/valr_request.py` uses):
-
-```python
-import hashlib
-import hmac
-
-def sign_request(api_secret, timestamp, verb, path, body="", subaccount_id=""):
-    payload = str(timestamp) + verb.upper() + path + body + subaccount_id
-    return hmac.new(
-        api_secret.encode("utf-8"),
-        payload.encode("utf-8"),
-        hashlib.sha512,
-    ).hexdigest()
-```
-
-## Verification Test Vectors
-
-Use these known-good inputs to verify a signing implementation:
-
-**GET request:**
-
-| Parameter | Value |
-|---|---|
-| API Secret | `4961b74efac86b25cce8fbe4c9811c4c7a787b7a5996660afcc2e287ad864363` |
-| Timestamp | `1558014486185` |
-| Verb | `GET` |
-| Path | `/v1/account/balances` |
-| Body | *(empty string)* |
-
-Expected signature:
-```
-9d52c181ed69460b49307b7891f04658e938b21181173844b5018b2fe783a6d4c62b8e67a03de4d099e7437ebfabe12c56233b73c6a0cc0f7ae87e05f6289928
-```
-
-**POST request:**
-
-| Parameter | Value |
-|---|---|
-| API Secret | `4961b74efac86b25cce8fbe4c9811c4c7a787b7a5996660afcc2e287ad864363` |
-| Timestamp | `1558017528946` |
-| Verb | `POST` |
-| Path | `/v1/orders/market` |
-| Body | `{"customerOrderId":"ORDER-000001","pair":"BTCUSDC","side":"BUY","quoteAmount":"80000"}` |
-
-Expected signature:
-```
-09f536e3dfdad58443f16010a97a0a21ad27486b7b8d6d4103170d885410ed77f037f1fa628474190d4f5c08ca12c1acc850901f1c2e75c6d906ec3b32b008d0
-```
+If you encounter 401 or 403 errors on authenticated endpoints, verify that
+`VALR_API_KEY` and `VALR_API_SECRET` are set correctly in the environment.
 
 ## API Key Scope
 
@@ -132,11 +71,20 @@ python3 scripts/valr_request.py GET /v1/account/api-keys/current
 The `isSubAccount` field in the response indicates whether the key is scoped to
 a subaccount. If `true`, the key already operates on that subaccount directly.
 
-When using `valr_request.py`, pass `--subaccount-id ID` to scope any request
-to a subaccount. The script sets the `X-VALR-SUB-ACCOUNT-ID` header and
-includes the ID in the signing string automatically (see the signing formula
-in the Request Signing section above). No manual header or signature changes
-are needed.
+**Important caveats:**
+
+- Do not pass `--subaccount-id` when using a subaccount key. The key is already
+  scoped — adding the flag will cause the request to fail.
+- When using a subaccount key, refer to the account as "your account" or "your
+  subaccount" — not "your main account" or "primary account". The primary
+  account is a different account that this key cannot access.
+- A subaccount key cannot call subaccount management endpoints (list, create,
+  delete, transfer between accounts). These require a main account key.
+
+**Using `--subaccount-id` (main account keys only):** When using a main account
+key, pass `--subaccount-id ID` to scope any request to a subaccount. The script
+sets the `X-VALR-SUB-ACCOUNT-ID` header and includes the ID in the request
+signature automatically. No manual header or signature changes are needed.
 
 Some endpoints only operate on the primary account and will return 401 if a
 subaccount ID is included.

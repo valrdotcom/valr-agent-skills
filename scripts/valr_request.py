@@ -87,7 +87,7 @@ def make_request(
     cmd += ["-X", method.upper()]
 
     cmd += ["-H", "Content-Type: application/json"]
-    cmd += ["-H", "User-Agent: valr-agent-skill/0.2"]
+    cmd += ["-H", "User-Agent: valr-agent-skill/0.3"]
 
     if authenticated:
         timestamp = int(time.time() * 1000)

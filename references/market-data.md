@@ -383,6 +383,14 @@ Choose between the two bucket endpoints based on what you need:
 
 - `startTime`/`endTime` accept **ISO 8601** datetime strings (e.g. `2025-07-21T08:51:21Z`) instead of epoch seconds.
 
+**Example:**
+
+```bash
+# Last 6 hours of hourly BTCUSDT mark price
+# startTime/endTime use ISO 8601 strings, NOT epoch seconds
+python3 scripts/valr_request.py GET "/v1/public/BTCUSDT/markprice/buckets?periodSeconds=3600&startTime=2025-07-21T02:00:00Z&endTime=2025-07-21T08:00:00Z"
+```
+
 **Response** — same shape as traded buckets but **without** `volume` and
 `quoteVolume`:
 

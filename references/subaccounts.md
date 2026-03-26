@@ -9,6 +9,13 @@ trading history, and margin/futures settings. The primary account has id `"0"`.
 - Subaccount management requires a **primary account API key** with Trade or View permissions.
 - To scope a request to a specific subaccount, see `references/authentication.md`.
 
+> **Using a subaccount key?** If `isSubAccount` is `true` (check via
+> `GET /v1/account/api-keys/current`), most endpoints in this file will not
+> work. Subaccount keys cannot list, create, rename, delete subaccounts, view
+> all-account balances, or transfer between accounts. To check balances or
+> trade on your subaccount, use the standard endpoints in `references/account.md`
+> and `references/trading.md` without `--subaccount-id`.
+
 ## Contents
 
 | Operation | Section | Endpoint |

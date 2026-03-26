@@ -17,7 +17,7 @@ Recipients are identified by one of three methods:
 
 Payments can be anonymous (sender identity hidden from recipient), and both
 parties can attach notes. VALR Pay supports multiple currencies including USDT,
-BTC, and ZAR.
+BTC, and ETH.
 
 > **Always fetch live data.** Do not answer VALR Pay questions from the examples
 > or tables in this file — call the API via `valr_request.py` every time. The
@@ -90,7 +90,7 @@ current values rather than using any example values from this file.
 
 | Parameter | Description |
 |---|---|
-| `currency` | Currency code, e.g. `USDT`, `BTC`, `ZAR` |
+| `currency` | Currency code, e.g. `USDT`, `BTC`, `ETH` |
 
 **Response:**
 
@@ -136,7 +136,7 @@ below the minimum the API returns error `-15430`. Do not skip this step.
 
 | Field | Required | Notes |
 |---|---|---|
-| `currency` | Yes | Currency code (e.g. `"USDT"`, `"BTC"`, `"ZAR"`) |
+| `currency` | Yes | Currency code (e.g. `"USDT"`, `"BTC"`, `"ETH"`) |
 | `amount` | Yes | Payment amount as a string |
 | `recipientPayId` | Conditional | Recipient's PayID. Exactly **one** of `recipientPayId`, `recipientEmail`, or `recipientCellNumber` must be provided. |
 | `recipientEmail` | Conditional | Recipient's registered VALR email address. |
@@ -192,8 +192,8 @@ Returns a list of all payments sent from and received by the current account.
   {
     "identifier": "42e4c2ce-df12-4f77-81f6-661b4d226374",
     "otherPartyIdentifier": "Oz",
-    "amount": 200,
-    "currency": "ZAR",
+    "amount": 25,
+    "currency": "USDT",
     "status": "COMPLETE",
     "timestamp": "2022-04-29T09:46:51.132056Z",
     "note": "Test",
@@ -242,8 +242,8 @@ Returns a simpler status-focused view:
 
 ```json
 {
-  "amount": "200",
-  "currency": "ZAR",
+  "amount": "25",
+  "currency": "USDT",
   "timestamp": "2022-04-29T09:42:25.922673Z",
   "transactionId": "969534114340323328",
   "status": "COMPLETE",

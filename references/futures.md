@@ -39,7 +39,8 @@ do this depends on your API key type (see `references/authentication.md`):
   includes the ID in the request signature automatically. See
   `references/subaccounts.md` to discover the subaccount ID.
 - **Subaccount key issued on a futures-enabled subaccount**: no extra flag
-  needed — the key is already scoped to that subaccount.
+  needed — the key is already scoped to that subaccount. Do not attempt to
+  list subaccounts or use `--subaccount-id`.
 
 ### Checking whether futures is enabled
 

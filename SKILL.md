@@ -3,7 +3,7 @@ name: valr-exchange
 description: "Interact with the VALR cryptocurrency exchange API. Handles authentication (HMAC-SHA512 signing), account balance queries, market data retrieval, spot order placement, perpetual futures trading, fee queries, VALR Pay (instant P2P payments), crypto deposits and withdrawals, and more. TRIGGER when: the user mentions VALR, VALR API, or asks to trade, check balances, retrieve market data, query fees or trading costs, manage futures positions, send/receive VALR Pay payments, deposit or withdraw crypto, or check deposit/withdrawal status on VALR. DO NOT TRIGGER for: other exchanges (Binance, Coinbase, Kraken, etc.) or general crypto questions not involving VALR."
 metadata:
   author: valr
-  version: "0.2"
+  version: "0.3"
 compatibility: "Requires Python 3.8+. Requires network access to api.valr.com."
 allowed-tools: Bash(python3 scripts/valr_request.py*)
 ---
@@ -25,6 +25,30 @@ export VALR_API_SECRET=your_api_secret
 Public endpoints (market data, currency pairs, order books) work without
 credentials. Authenticated endpoints (balances, orders, account data) require
 both variables to be set.
+
+## API Key Scope
+
+The configured API key determines what accounts you can access. When a task
+involves subaccounts, futures, transfers, or any account-specific operation,
+check the key type first:
+
+```bash
+python3 scripts/valr_request.py GET /v1/account/api-keys/current
+```
+
+- **`isSubAccount: false` (main account key)**: operates on the primary account
+  by default. Can target any subaccount via `--subaccount-id`. Can list, create,
+  and manage subaccounts.
+- **`isSubAccount: true` (subaccount key)**: operates exclusively on the single
+  subaccount it was issued on. Cannot access other subaccounts or the primary
+  account. Do not use `--subaccount-id`. Subaccount management endpoints (list,
+  create, delete, transfer) will fail with this key.
+
+When using a subaccount key, refer to the associated account as "your account"
+or "your subaccount" — never "your main account" or "primary account". The
+primary account is a separate account that this key cannot access.
+
+See `references/authentication.md` for details.
 
 ## Available Scripts
 
@@ -180,11 +204,19 @@ The correct pattern for every data request:
   because `POST /v2/orders/limit` does). Always look up the exact method and
   path in the relevant reference file before making a request.
 - **Futures requires a subaccount** — perpetual futures cannot be traded on the
-  primary account. All futures API calls (positions, leverage, funding) must be
-  scoped to a futures-enabled subaccount using `--subaccount-id <ID>`. To find
-  the subaccount ID, call `GET /v1/account/subaccounts` first (see
-  `references/subaccounts.md`). PERP pair names follow the `{BASE}USDTPERP`
-  convention (e.g. `BTCUSDTPERP`, `ETHUSDTPERP`).
+  primary account. If using a main account key (`isSubAccount: false`), scope
+  all futures API calls to a futures-enabled subaccount using
+  `--subaccount-id <ID>` — call `GET /v1/account/subaccounts` to find it (see
+  `references/subaccounts.md`). If using a subaccount key (`isSubAccount: true`),
+  no `--subaccount-id` is needed — verify futures is enabled via
+  `GET /v1/margin/account/status` (see `references/margin.md`). PERP pair names
+  follow the `{BASE}USDTPERP` convention (e.g. `BTCUSDTPERP`, `ETHUSDTPERP`).
+- **Do not assume your key is a main account key** — API keys can be issued at
+  subaccount level. A subaccount key operates only on its own subaccount and
+  cannot list, create, or access other subaccounts. If a task requires
+  subaccount management or cross-account operations, check
+  `GET /v1/account/api-keys/current` first. If `isSubAccount` is `true`, inform
+  the user that the operation requires a main account key.
 - **All requests must use `Content-Type: application/json`** — the script sets
   this automatically. Raw HTTP clients that omit this header will receive 403.
 - **202 Accepted means async** — order placement endpoints often return 202,

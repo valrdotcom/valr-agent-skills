@@ -77,11 +77,6 @@ deleted while either is enabled. Enablement can be done via the API using
 `PUT /v1/margin/account/status` — see `references/subaccounts.md` for the
 complete workflow.
 
-**Note (main account keys):** Calling without `--subaccount-id` checks the
-primary account, which always returns `futuresEnabled: false` and
-`marginEnabled: false`. This is expected — the primary account cannot trade
-futures or use margin. Always scope this call to the relevant subaccount.
-
 ### If futuresEnabled is false on the primary account
 
 When checking the primary account and finding `futuresEnabled: false`, explain
@@ -97,6 +92,11 @@ that:
 > **Do not tell the user to use the VALR website to enable futures.** The API
 > supports it directly via `PUT /v1/margin/account/status` scoped to a
 > subaccount. Always present the API option.
+
+**Note (main account keys):** Calling without `--subaccount-id` checks the
+primary account, which always returns `futuresEnabled: false` and
+`marginEnabled: false`. This is expected — the primary account cannot trade
+futures or use margin. Always scope this call to the relevant subaccount.
 
 ### If futures is not enabled on a subaccount
 
