@@ -20,6 +20,9 @@ Examples:
   python3 scripts/valr_request.py GET /v1/public/pairs --verbose
 
 Environment variables:
+  VALR_API_KEY_SECRET_COMBINED — API key and secret joined by a colon
+                                  (key:secret). When set and non-empty, takes
+                                  precedence over VALR_API_KEY / VALR_API_SECRET.
   VALR_API_KEY    — API key (required for authenticated endpoints)
   VALR_API_SECRET — API secret (required for authenticated endpoints)
   VALR_BASE_URL   — Base URL (default: https://api.valr.com)
@@ -77,8 +80,12 @@ def make_request(
     base_url = os.environ.get("VALR_BASE_URL", DEFAULT_BASE_URL).rstrip("/")
     url = base_url + path
 
-    api_key = os.environ.get("VALR_API_KEY", "")
-    api_secret = os.environ.get("VALR_API_SECRET", "")
+    combined = os.environ.get("VALR_API_KEY_SECRET_COMBINED", "")
+    if combined:
+        api_key, _, api_secret = combined.partition(":")
+    else:
+        api_key = os.environ.get("VALR_API_KEY", "")
+        api_secret = os.environ.get("VALR_API_SECRET", "")
     authenticated = bool(api_key and api_secret)
 
     cmd = ["curl", "-s", "-S"]
@@ -87,7 +94,7 @@ def make_request(
     cmd += ["-X", method.upper()]
 
     cmd += ["-H", "Content-Type: application/json"]
-    cmd += ["-H", "User-Agent: valr-agent-skill/0.3"]
+    cmd += ["-H", "User-Agent: valr-agent-skill/0.4"]
 
     if authenticated:
         timestamp = int(time.time() * 1000)

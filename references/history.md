@@ -1,7 +1,7 @@
 # History Reference
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 ## Permissions
 
@@ -17,7 +17,7 @@
 | Full account ledger (trades, deposits, fees, etc.) | `GET /v1/account/transactionhistory` |
 
 > **Order history summary** (aggregated totals for a single known order ID) is
-> already documented in `references/trading.md` under "Check Order Status".
+> already documented in `{baseDir}/references/trading.md` under "Check Order Status".
 
 ---
 
@@ -35,7 +35,7 @@ more may exist — offer to page. Use `beforeId` (cursor, preferred) or
 ## Account Trade History (Fills)
 
 - Each record represents a trade that executed against your order.
-- `price` and `total` are in the pair's **quote currency** (e.g. USDT for `BTCUSDT`, BTC for `ETHBTC`). For cross-currency aggregation, see `references/market-data.md`.
+- `price` and `total` are in the pair's **quote currency** (e.g. USDT for `BTCUSDT`, BTC for `ETHBTC`). For cross-currency aggregation, see `{baseDir}/references/market-data.md`.
 
 ### All pairs
 
@@ -57,13 +57,13 @@ Supports date filtering and cursor-based backwards pagination.
 
 ```bash
 # Most recent 100 fills
-python3 scripts/valr_request.py GET /v1/account/tradehistory
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/tradehistory
 
 # Fills for a date range
-python3 scripts/valr_request.py GET "/v1/account/tradehistory?startTime=2024-01-01T00:00:00.000Z&endTime=2024-01-31T23:59:59.999Z"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/account/tradehistory?startTime=2024-01-01T00:00:00.000Z&endTime=2024-01-31T23:59:59.999Z"
 
 # Next page (backwards from a known trade ID)
-python3 scripts/valr_request.py GET "/v1/account/tradehistory?beforeId=0197d496-0e9f-7230-9aa1-4699655e7230"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/account/tradehistory?beforeId=0197d496-0e9f-7230-9aa1-4699655e7230"
 ```
 
 **Response** — array of fill objects:
@@ -112,7 +112,7 @@ No date filtering. Returns up to 100 fills for the given pair.
 **Example:**
 
 ```bash
-python3 scripts/valr_request.py GET /v1/account/BTCUSDT/tradehistory
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/BTCUSDT/tradehistory
 ```
 
 Response schema is identical to the all-pairs endpoint above.
@@ -143,13 +143,13 @@ Response schema is identical to the all-pairs endpoint above.
 
 ```bash
 # All recent orders
-python3 scripts/valr_request.py GET /v1/orders/history
+python3 {baseDir}/scripts/valr_request.py GET /v1/orders/history
 
 # Filled BTCUSDT orders only
-python3 scripts/valr_request.py GET "/v1/orders/history?currencyPair=BTCUSDT&statuses=FILLED"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/orders/history?currencyPair=BTCUSDT&statuses=FILLED"
 
 # Orders updated in a date range
-python3 scripts/valr_request.py GET "/v1/orders/history?startTime=2024-01-01T00:00:00.000Z&endTime=2024-01-31T23:59:59.999Z"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/orders/history?startTime=2024-01-01T00:00:00.000Z&endTime=2024-01-31T23:59:59.999Z"
 ```
 
 **Response** — array of order summary objects:
@@ -206,7 +206,7 @@ Key fields:
 > **REQUIRED:** Always explicitly inform the user that the raw API returns index 0 as the most recent state (reverse-chronological), even when you present transitions chronologically.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/orders/history/detail/orderid/612ca8ef-15a3-4a85-b991-cc8d23c0e485
+python3 {baseDir}/scripts/valr_request.py GET /v1/orders/history/detail/orderid/612ca8ef-15a3-4a85-b991-cc8d23c0e485
 ```
 
 ```json
@@ -248,7 +248,7 @@ Key fields (per snapshot):
 | `executedFee` | Fee charged *for this event* |
 | `orderStatusType` | Status at this snapshot: `"Placed"`, `"Filled"`, `"Cancelled"`, `"Failed"`, `"Partially Filled"`, `"Active"` |
 
-> Unlike `history/summary`, this endpoint works for **all** order states including still-active orders. For aggregate totals (`averagePrice`, `totalFee`, etc.) use `GET /v1/orders/history/summary/orderid/{id}` (see `references/trading.md`).
+> Unlike `history/summary`, this endpoint works for **all** order states including still-active orders. For aggregate totals (`averagePrice`, `totalFee`, etc.) use `GET /v1/orders/history/summary/orderid/{id}` (see `{baseDir}/references/trading.md`).
 
 ---
 
@@ -312,16 +312,16 @@ Key fields (per snapshot):
 
 ```bash
 # Recent transactions
-python3 scripts/valr_request.py GET /v1/account/transactionhistory
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/transactionhistory
 
 # BTC transactions only
-python3 scripts/valr_request.py GET "/v1/account/transactionhistory?currency=BTC"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/account/transactionhistory?currency=BTC"
 
 # On-chain BTC deposits and withdrawals
-python3 scripts/valr_request.py GET "/v1/account/transactionhistory?currency=BTC&transactionTypes=BLOCKCHAIN_RECEIVE,BLOCKCHAIN_SEND"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/account/transactionhistory?currency=BTC&transactionTypes=BLOCKCHAIN_RECEIVE,BLOCKCHAIN_SEND"
 
 # Limit and market trade fills only
-python3 scripts/valr_request.py GET "/v1/account/transactionhistory?transactionTypes=LIMIT_BUY,LIMIT_SELL,MARKET_BUY,MARKET_SELL"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/account/transactionhistory?transactionTypes=LIMIT_BUY,LIMIT_SELL,MARKET_BUY,MARKET_SELL"
 ```
 
 **Response** — array of transaction objects:

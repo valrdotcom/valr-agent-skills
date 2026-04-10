@@ -1,20 +1,20 @@
 # Subaccounts
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 A VALR account can have multiple subaccounts, each with its own balances,
 trading history, and margin/futures settings. The primary account has id `"0"`.
 
 - Subaccount management requires a **primary account API key** with Trade or View permissions.
-- To scope a request to a specific subaccount, see `references/authentication.md`.
+- To scope a request to a specific subaccount, see `{baseDir}/references/authentication.md`.
 
 > **Using a subaccount key?** If `isSubAccount` is `true` (check via
 > `GET /v1/account/api-keys/current`), most endpoints in this file will not
 > work. Subaccount keys cannot list, create, rename, delete subaccounts, view
 > all-account balances, or transfer between accounts. To check balances or
-> trade on your subaccount, use the standard endpoints in `references/account.md`
-> and `references/trading.md` without `--subaccount-id`.
+> trade on your subaccount, use the standard endpoints in `{baseDir}/references/account.md`
+> and `{baseDir}/references/trading.md` without `--subaccount-id`.
 
 ## Contents
 
@@ -47,7 +47,7 @@ GET /v1/account/subaccounts
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py GET /v1/account/subaccounts
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/subaccounts
 ```
 
 ### Response
@@ -85,7 +85,7 @@ GET /v1/account/subaccount/{accountPublicId}
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py GET /v1/account/subaccount/1402613105484087296
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/subaccount/1402613105484087296
 ```
 
 ### Example Response
@@ -114,7 +114,7 @@ POST /v1/account/subaccount?isProprietarySubAccount=true
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py POST \
+python3 {baseDir}/scripts/valr_request.py POST \
   "/v1/account/subaccount?isProprietarySubAccount=true" \
   --body '{"label":"my-trading-desk"}'
 ```
@@ -156,7 +156,7 @@ PUT /v1/account/subaccount?isProprietarySubAccount=true
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py PUT \
+python3 {baseDir}/scripts/valr_request.py PUT \
   "/v1/account/subaccount?isProprietarySubAccount=true" \
   --body '{"id":1481889851794235392,"label":"renamed-desk"}'
 ```
@@ -194,7 +194,7 @@ DELETE /v1/account/subaccount
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py DELETE /v1/account/subaccount \
+python3 {baseDir}/scripts/valr_request.py DELETE /v1/account/subaccount \
   --body '{"id":1481889851794235392}'
 ```
 
@@ -238,11 +238,11 @@ to.
 
 ```bash
 # Transfer from primary (id 0) to a subaccount
-python3 scripts/valr_request.py POST /v1/account/subaccounts/transfer \
+python3 {baseDir}/scripts/valr_request.py POST /v1/account/subaccounts/transfer \
   --body '{"fromId":0,"toId":1402613105484087296,"currencyCode":"USDT","amount":"100","allowBorrow":false}'
 
 # Transfer from a subaccount back to primary
-python3 scripts/valr_request.py POST /v1/account/subaccounts/transfer \
+python3 {baseDir}/scripts/valr_request.py POST /v1/account/subaccounts/transfer \
   --body '{"fromId":1402613105484087296,"toId":0,"currencyCode":"USDT","amount":"100","allowBorrow":false}'
 ```
 
@@ -294,7 +294,7 @@ GET /v1/account/balances/all
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py GET /v1/account/balances/all
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/balances/all
 ```
 
 ### Response
@@ -380,11 +380,11 @@ GET /v1/account/transactionhistory/subaccounts
 
 ```bash
 # Last 24 hours (default)
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/account/transactionhistory/subaccounts?limit=50"
 
 # Specific time range
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/account/transactionhistory/subaccounts?startTime=2026-03-01T00:00:00Z&endTime=2026-03-07T00:00:00Z"
 ```
 
@@ -441,12 +441,12 @@ enabled. Subaccounts with either enabled cannot be deleted.
 
 ```bash
 # Enable futures on a subaccount (using primary key + subaccount-id)
-python3 scripts/valr_request.py PUT /v1/margin/account/status \
+python3 {baseDir}/scripts/valr_request.py PUT /v1/margin/account/status \
   --subaccount-id 1402613105484087296 \
   --body '{"accountStatusFieldName":"FUTURES_ENABLED","enabled":true}'
 
 # Enable margin on a subaccount
-python3 scripts/valr_request.py PUT /v1/margin/account/status \
+python3 {baseDir}/scripts/valr_request.py PUT /v1/margin/account/status \
   --subaccount-id 1402613105484087296 \
   --body '{"accountStatusFieldName":"MARGIN_ENABLED","enabled":true}'
 ```
@@ -482,20 +482,20 @@ To find which subaccounts have futures enabled without knowing IDs in advance:
 
 ```bash
 # 1. List all subaccounts
-python3 scripts/valr_request.py GET /v1/account/subaccounts
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/subaccounts
 
 # 2. Check each subaccount's status
-python3 scripts/valr_request.py GET /v1/margin/account/status \
+python3 {baseDir}/scripts/valr_request.py GET /v1/margin/account/status \
   --subaccount-id <id>
 # Look for: "futuresEnabled": true
 
 # 3. If none found and you want to enable a new one, create a subaccount first
-python3 scripts/valr_request.py POST \
+python3 {baseDir}/scripts/valr_request.py POST \
   "/v1/account/subaccount?isProprietarySubAccount=true" \
   --body '{"label":"futures-trading"}'
 
 # 4. Enable futures on it (irreversible)
-python3 scripts/valr_request.py PUT /v1/margin/account/status \
+python3 {baseDir}/scripts/valr_request.py PUT /v1/margin/account/status \
   --subaccount-id <new-id> \
   --body '{"accountStatusFieldName":"FUTURES_ENABLED","enabled":true}'
 ```

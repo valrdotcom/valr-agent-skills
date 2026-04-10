@@ -1,7 +1,7 @@
 # Currencies Reference
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 ## Contents
 
@@ -22,7 +22,7 @@ This is a public endpoint — no credentials required.
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/currencies
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/currencies
 ```
 
 ### Response

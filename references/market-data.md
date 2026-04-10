@@ -1,7 +1,7 @@
 # Market Data
 
 > **Always fetch live data.** Do not answer market data questions from the
-> examples or tables in this file — call the API via `valr_request.py` every
+> examples or tables in this file — call the API via `{baseDir}/scripts/valr_request.py` every
 > time. The examples here illustrate response shape only.
 
 All endpoints in this file are public — no credentials required. They work
@@ -11,7 +11,7 @@ without `VALR_API_KEY` or `VALR_API_SECRET` being set.
 
 | What you need | Section | Key endpoint |
 |---|---|---|
-| List all currencies and their details | `references/currencies.md` | `GET /v1/public/currencies` |
+| List all currencies and their details | `{baseDir}/references/currencies.md` | `GET /v1/public/currencies` |
 | List trading pairs and constraints (tick size, min/max amounts) | Currency Pairs | `GET /v1/public/pairs` |
 | Check which order types a pair supports | Order Types | `GET /v1/public/ordertypes` |
 | 24-hour price and volume summary | Market Summaries | `GET /v1/public/marketsummary` |
@@ -22,7 +22,7 @@ without `VALR_API_KEY` or `VALR_API_SECRET` being set.
 ## Supported Currencies
 
 For currency details (supported currencies, network types, deposit/withdrawal
-availability), see `references/currencies.md`.
+availability), see `{baseDir}/references/currencies.md`.
 
 ---
 
@@ -38,14 +38,14 @@ GET /v1/public/pairs
 ### Usage
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/pairs
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/pairs
 ```
 
 To filter by type (e.g. spot pairs only):
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/pairs/SPOT
-python3 scripts/valr_request.py GET /v1/public/pairs/FUTURE
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/pairs/SPOT
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/pairs/FUTURE
 ```
 
 ### Response
@@ -130,7 +130,7 @@ GET /v1/public/ordertypes
 No credentials required.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/ordertypes
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/ordertypes
 ```
 
 Returns an array of objects, one per currency pair:
@@ -167,7 +167,7 @@ GET /v1/public/{currencyPair}/ordertypes
 No credentials required.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/BTCUSDC/ordertypes
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/BTCUSDC/ordertypes
 ```
 
 Returns a flat array of supported order type strings for the pair:
@@ -204,7 +204,7 @@ GET /v1/public/marketsummary
 No credentials required.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/marketsummary
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/marketsummary
 ```
 
 Returns an array of market summary objects, one per pair.
@@ -218,7 +218,7 @@ GET /v1/public/{currencyPair}/marketsummary
 No credentials required. **Prefer this endpoint over the all-pairs endpoint when the user asks about a specific pair** — do not fetch all pairs and filter client-side.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/BTCUSDC/marketsummary
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/BTCUSDC/marketsummary
 ```
 
 Returns a single market summary object (not an array).
@@ -324,10 +324,10 @@ No credentials required.
 # startTime = now - 86400 seconds, endTime = now (use shell arithmetic or Python)
 python3 -c "import time; print(int(time.time()) - 86400)"  # get startTime
 
-python3 scripts/valr_request.py GET "/v1/public/BTCUSDT/buckets?periodSeconds=3600&startTime=1753102597&endTime=1753188997"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/public/BTCUSDT/buckets?periodSeconds=3600&startTime=1753102597&endTime=1753188997"
 
 # Daily candles for a specific week
-python3 scripts/valr_request.py GET "/v1/public/BTCUSDT/buckets?periodSeconds=86400&startTime=1752096000&endTime=1752700800"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/public/BTCUSDT/buckets?periodSeconds=86400&startTime=1752096000&endTime=1752700800"
 ```
 
 **Response** — array of bucket objects:
@@ -388,7 +388,7 @@ Choose between the two bucket endpoints based on what you need:
 ```bash
 # Last 6 hours of hourly BTCUSDT mark price
 # startTime/endTime use ISO 8601 strings, NOT epoch seconds
-python3 scripts/valr_request.py GET "/v1/public/BTCUSDT/markprice/buckets?periodSeconds=3600&startTime=2025-07-21T02:00:00Z&endTime=2025-07-21T08:00:00Z"
+python3 {baseDir}/scripts/valr_request.py GET "/v1/public/BTCUSDT/markprice/buckets?periodSeconds=3600&startTime=2025-07-21T02:00:00Z&endTime=2025-07-21T08:00:00Z"
 ```
 
 **Response** — same shape as traded buckets but **without** `volume` and
@@ -423,7 +423,7 @@ Use `GET /v1/public/pairs` and look up the pair by symbol — use `quoteCurrency
 Fetch `GET /v1/public/{pair}/marketsummary` and use `lastTradedPrice`.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/BTCUSDT/marketsummary
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/BTCUSDT/marketsummary
 # → use lastTradedPrice
 ```
 
@@ -436,7 +436,7 @@ Fetch `GET /v1/public/{pair}/buckets` scoped to a window covering the trade's ti
 
 ```bash
 # BTCUSDT rate for the hour covering 2024-06-13 09:21 UTC
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/public/BTCUSDT/buckets?periodSeconds=3600&startTime=1718269200&endTime=1718272800"
 # → use close of the bucket whose startTime is "2024-06-13T09:00:00Z"
 ```
@@ -492,7 +492,7 @@ GET /v1/public/{currencyPair}/orderbook
 No credentials required.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/BTCUSDC/orderbook
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/BTCUSDC/orderbook
 ```
 
 ### Response

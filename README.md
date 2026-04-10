@@ -18,6 +18,16 @@ export VALR_API_SECRET=your_api_secret
 
 > **⚠️ Keep your credentials safe.** API keys can authorise trades and withdrawals on your behalf. Never commit them to version control. When creating keys, grant only the permissions your workflow requires.
 
+### OpenClaw
+
+OpenClaw's skill configuration provides a single [`apiKey` SecretRef](https://docs.openclaw.ai/gateway/secrets) per skill for credential injection. Since VALR requires both an API key and an API secret, this skill supports combining them into one colon-separated value:
+
+```bash
+export VALR_API_KEY_SECRET_COMBINED=your_api_key:your_api_secret
+```
+
+When set, this takes precedence over `VALR_API_KEY` / `VALR_API_SECRET`. See [`references/openclaw.md`](references/openclaw.md) for the full setup guide including secure credential storage with 1Password.
+
 ## Installation
 
 This skill follows the [Agent Skills](https://agentskills.io) standard and works with any compatible coding agent. Place this repository in your agent's skills directory — the agent discovers and loads `SKILL.md` automatically.

@@ -1,7 +1,7 @@
 # VALR Pay Reference
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 ## What is VALR Pay?
 
@@ -20,7 +20,7 @@ parties can attach notes. VALR Pay supports multiple currencies including USDT,
 BTC, and ETH.
 
 > **Always fetch live data.** Do not answer VALR Pay questions from the examples
-> or tables in this file — call the API via `valr_request.py` every time. The
+> or tables in this file — call the API via `{baseDir}/scripts/valr_request.py` every time. The
 > examples here illustrate response shape only.
 
 ## Permissions

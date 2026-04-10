@@ -1,7 +1,13 @@
 # Trading Fees
 
 > **Always call the API.** Do not answer fee questions from the examples in
-> this file — call the endpoint via `valr_request.py` every time.
+> this file — call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
+
+This file covers:
+
+- **Exchange trading fees** — maker/taker model, fee tiers, and how to query your rates via `GET /v1/account/fees/trade`
+- **Simple Buy/Sell fees** — flat fee structure and pre-trade quotes via `POST /v1/simple/{pair}/quote`
+- **Fee fields in trade history** — how fees and rebates appear in fill records
 
 ## Overview
 
@@ -10,7 +16,7 @@ VALR has two distinct fee structures:
 - **Exchange trading fees** — maker/taker fees that apply when trading on the
   order book (limit, market, and stop orders). Covered in full below.
 - **Simple Buy/Sell fees** — a flat fee that applies to simple orders. Covered
-  at the bottom of this file; see `references/trading.md` for order placement.
+  at the bottom of this file; see `{baseDir}/references/trading.md` for order placement.
 
 ---
 
@@ -109,7 +115,7 @@ personal rates based on their volume tier, not generic advertised rates.
   value means the exchange pays you a rebate for adding liquidity. When a
   rebate applies to a fill, it appears in trade history as `makerReward` and
   `makerRewardCurrency` rather than `fee` and `feeCurrency` — see
-  `references/history.md`.
+  `{baseDir}/references/history.md`.
 - **Absent `makerPercentage`/`takerPercentage`** means the pair is not
   available for order book trading (simple orders only).
 - **Absent `simplePercentage`** means the pair does not support simple orders
@@ -120,7 +126,7 @@ personal rates based on their volume tier, not generic advertised rates.
 ## Fee Fields in Trade History
 
 When a trade executes, the fee charged appears in the fill record. See
-`references/history.md` for the full field list. The key fields are:
+`{baseDir}/references/history.md` for the full field list. The key fields are:
 
 - `fee` + `feeCurrency` — the fee deducted (taker, or positive maker fee)
 - `makerReward` + `makerRewardCurrency` — present instead of `fee` when the
@@ -138,7 +144,7 @@ receive**, not added on top of what you pay.
 Perpetual futures pairs do not support simple orders and have no
 `simplePercentage` in the fees response.
 
-For simple order placement, see `references/trading.md`.
+For simple order placement, see `{baseDir}/references/trading.md`.
 
 ### Querying the simple fee rate
 

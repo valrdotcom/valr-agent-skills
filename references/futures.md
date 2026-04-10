@@ -1,7 +1,7 @@
 # Perpetual Futures
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 VALR perpetual futures are cryptocurrency derivatives that track the underlying
 asset with no expiry. They involve **positions** (long/short), **leverage**,
@@ -13,7 +13,7 @@ Read the relevant section for the task at hand.
 
 | What you need | Section | Key endpoint |
 |---|---|---|
-| Subaccount setup and enablement | Account Requirements | *(see also `references/subaccounts.md`)* |
+| Subaccount setup and enablement | Account Requirements | *(see also `{baseDir}/references/subaccounts.md`)* |
 | Available leverage tiers for a pair | Leverage Tiers | `GET /v1/public/risklimit/{currencyPair}` |
 | Available futures pairs and funding rates | Futures Market Data | `GET /v1/public/futures/info` |
 | Past funding rates for a pair (public) | Futures Market Data | `GET /v1/public/futures/funding/history` |
@@ -29,15 +29,15 @@ Read the relevant section for the task at hand.
 
 - Perpetual futures **cannot be traded on a VALR primary account** — only on subaccounts with futures explicitly enabled.
 - Futures enablement is one-time and irreversible. The subaccount cannot be deleted while futures is enabled.
-- Enable via `PUT /v1/margin/account/status`. See `references/subaccounts.md` for the full workflow.
+- Enable via `PUT /v1/margin/account/status`. See `{baseDir}/references/subaccounts.md` for the full workflow.
 
 All futures API calls must be scoped to a futures-enabled subaccount. How you
-do this depends on your API key type (see `references/authentication.md`):
+do this depends on your API key type (see `{baseDir}/references/authentication.md`):
 
 - **Main account key**: pass `--subaccount-id YOUR_SUBACCOUNT_ID` on every
-  futures call. `valr_request.py` sets the `X-VALR-SUB-ACCOUNT-ID` header and
+  futures call. `{baseDir}/scripts/valr_request.py` sets the `X-VALR-SUB-ACCOUNT-ID` header and
   includes the ID in the request signature automatically. See
-  `references/subaccounts.md` to discover the subaccount ID.
+  `{baseDir}/references/subaccounts.md` to discover the subaccount ID.
 - **Subaccount key issued on a futures-enabled subaccount**: no extra flag
   needed — the key is already scoped to that subaccount. Do not attempt to
   list subaccounts or use `--subaccount-id`.
@@ -45,7 +45,7 @@ do this depends on your API key type (see `references/authentication.md`):
 ### Checking whether futures is enabled
 
 Use `GET /v1/margin/account/status` scoped to the relevant subaccount. See
-`references/margin.md` for field descriptions and the error returned when
+`{baseDir}/references/margin.md` for field descriptions and the error returned when
 futures is not enabled.
 
 **Note (main account keys):** Calling `GET /v1/positions/open` without
@@ -61,7 +61,7 @@ Returns all available leverage tiers for a perpetual futures pair. No
 authentication required.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/risklimit/BTCUSDTPERP
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/risklimit/BTCUSDTPERP
 ```
 
 Response is an array of objects, one per tier, ordered ascending by
@@ -102,7 +102,7 @@ Returns an array of all active perpetual futures pairs with current funding
 and open interest data.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/public/futures/info
+python3 {baseDir}/scripts/valr_request.py GET /v1/public/futures/info
 ```
 
 Response is an array, one object per pair:
@@ -130,7 +130,7 @@ to look up past funding rates. To see funding payments on your own positions,
 use `GET /v1/positions/funding/history` instead (see Account Funding History).
 
 ```bash
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/public/futures/funding/history?currencyPair=BTCUSDTPERP&limit=24"
 ```
 
@@ -164,7 +164,7 @@ Returns the current leverage configuration for a specific perpetual futures
 pair on the account.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/margin/leverage/BTCUSDTPERP \
+python3 {baseDir}/scripts/valr_request.py GET /v1/margin/leverage/BTCUSDTPERP \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
 
@@ -197,7 +197,7 @@ Changes the leverage tier for a specific pair. The `leverageMultiple` must
 be one of the values returned by `GET /v1/public/risklimit/{currencyPair}`.
 
 ```bash
-python3 scripts/valr_request.py PUT /v1/margin/leverage/BTCUSDTPERP \
+python3 {baseDir}/scripts/valr_request.py PUT /v1/margin/leverage/BTCUSDTPERP \
   --body '{"leverageMultiple":"5"}' \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
@@ -230,7 +230,7 @@ python3 scripts/valr_request.py PUT /v1/margin/leverage/BTCUSDTPERP \
 Returns all open futures positions on the account.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/positions/open \
+python3 {baseDir}/scripts/valr_request.py GET /v1/positions/open \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
 
@@ -297,7 +297,7 @@ type, fees). A single position lifecycle may have multiple close events if
 it was partially closed.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/positions/closed \
+python3 {baseDir}/scripts/valr_request.py GET /v1/positions/closed \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
 
@@ -330,7 +330,7 @@ Returns a per-position summary aggregating all close events for each
 position lifecycle.
 
 ```bash
-python3 scripts/valr_request.py GET /v1/positions/closed/summary \
+python3 {baseDir}/scripts/valr_request.py GET /v1/positions/closed/summary \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
 
@@ -362,7 +362,7 @@ Returns a chronological log of all state changes for positions on a specific
 pair (opening, increasing, reducing, PnL settlements, closing).
 
 ```bash
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/positions/history?currencyPair=BTCUSDTPERP" \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```
@@ -416,7 +416,7 @@ Returns funding payments the account has paid or received. Distinct from the
 amounts for your specific positions.
 
 ```bash
-python3 scripts/valr_request.py GET \
+python3 {baseDir}/scripts/valr_request.py GET \
   "/v1/positions/funding/history?currencyPair=BTCUSDTPERP" \
   --subaccount-id YOUR_SUBACCOUNT_ID
 ```

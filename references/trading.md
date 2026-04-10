@@ -1,7 +1,7 @@
 # Trading Reference
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 ## Permissions
 
@@ -39,7 +39,7 @@ ID once the order is accepted by the matching engine.
 > asynchronously. Prefer v2 for agentic use — you get an immediate confirmation.
 
 **Before placing, read the pair constraints** from
-`GET /v1/public/pairs` (see `references/market-data.md`) to check:
+`GET /v1/public/pairs` (see `{baseDir}/references/market-data.md`) to check:
 - `minBaseAmount` / `maxBaseAmount` — quantity limits
 - `minQuoteAmount` / `maxQuoteAmount` — total order value limits (price × quantity)
 - `tickSize` — minimum price increment; price must be a multiple of this value
@@ -74,7 +74,7 @@ ID once the order is accepted by the matching engine.
 - `FOK` (Fill or Kill) — must fill completely in full immediately, or it is cancelled entirely; no partial fills
 - `IOC` (Immediate or Cancel) — fills as much as possible immediately; any unfilled remainder is cancelled (partial fill is possible)
 
-**Fee implications:** A limit order may pay maker or taker fees depending on whether it crosses the spread at placement time. A `GTC` order that does not immediately match rests on the book; any fill or partial fill that occurs later pays the **maker** fee. An order that crosses the spread immediately pays the **taker** fee. For your current rates, see `references/fees.md`.
+**Fee implications:** A limit order may pay maker or taker fees depending on whether it crosses the spread at placement time. A `GTC` order that does not immediately match rests on the book; any fill or partial fill that occurs later pays the **maker** fee. An order that crosses the spread immediately pays the **taker** fee. For your current rates, see `{baseDir}/references/fees.md`.
 
 **Successful response (`201 Created`):**
 
@@ -97,7 +97,7 @@ Market orders are always `IOC` (Immediate or Cancel): they fill as much as
 possible and any unfilled remainder is cancelled. Returns `201 Created`.
 
 > Not all pairs support market orders. Check `GET /v1/public/{pair}/ordertypes`
-> first — `MARKET` must be in the list. See `references/market-data.md`.
+> first — `MARKET` must be in the list. See `{baseDir}/references/market-data.md`.
 
 **Before placing, check pair constraints** (`GET /v1/public/pairs`) for
 `minBaseAmount` and `minQuoteAmount`.
@@ -126,7 +126,7 @@ currency. Both fields work for both BUY and SELL.
 
 **Fee implications:** Market orders always pay the **taker** fee — they fill
 immediately against existing orders on the book. For your current rate, see
-`references/fees.md`.
+`{baseDir}/references/fees.md`.
 
 **Successful response (`201 Created`):**
 
@@ -286,7 +286,7 @@ Returns the same fields as above, plus:
 
 > To see every state transition an order went through (e.g. Placed → Partially
 > Filled → Cancelled), use `GET /v1/orders/history/detail/orderid/{id}` instead.
-> This is documented in `references/history.md`.
+> This is documented in `{baseDir}/references/history.md`.
 
 ## Place a Simple Order
 
@@ -298,7 +298,7 @@ Simple orders are **FOK** (Fill or Kill) — they fill in full immediately or
 fail. They never rest on the book, so they cannot be cancelled. Simple orders
 always pay a flat fee deducted from the received amount. To preview the fee
 and receive amount before placing, use the quote endpoint in
-`references/fees.md`.
+`{baseDir}/references/fees.md`.
 
 > Check `GET /v1/public/{pair}/ordertypes` to confirm the pair supports `SIMPLE`.
 
@@ -375,7 +375,7 @@ the response arrives once the cancellations have taken effect.
 No request body required.
 
 ```bash
-python3 scripts/valr_request.py DELETE /v1/orders
+python3 {baseDir}/scripts/valr_request.py DELETE /v1/orders
 ```
 
 **Successful response (`200 OK`):**
@@ -400,7 +400,7 @@ the given pair.
 No request body required. The pair is a path segment.
 
 ```bash
-python3 scripts/valr_request.py DELETE /v1/orders/BTCUSDT
+python3 {baseDir}/scripts/valr_request.py DELETE /v1/orders/BTCUSDT
 ```
 
 **Successful response (`200 OK`):**
@@ -453,7 +453,7 @@ When cancelling by `customerOrderId`, the response `id` echoes back the
 `customerOrderId` rather than the system UUID.
 
 To view all status transitions after cancellation (e.g. Placed → Cancelled),
-use `GET /v1/orders/history/detail/orderid/{id}` — see `references/history.md`.
+use `GET /v1/orders/history/detail/orderid/{id}` — see `{baseDir}/references/history.md`.
 
 ## Modify an Order
 
@@ -466,7 +466,7 @@ modification is processed.
 Modify the price, remaining quantity, or total quantity of an open or partially
 filled **limit order**. Modified orders retain their original `orderId` — the
 audit trail can be viewed via `GET /v1/orders/history/detail/orderid/{id}`
-(see `references/history.md`).
+(see `{baseDir}/references/history.md`).
 
 **Request body:**
 

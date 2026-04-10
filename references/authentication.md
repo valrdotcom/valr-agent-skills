@@ -12,7 +12,7 @@
 Public endpoints (under `/v1/public/*`) require no authentication. All other
 endpoints require HMAC-SHA512 signed requests using an API key and secret.
 
-Use `scripts/valr_request.py` — it handles signing automatically when
+Use `{baseDir}/scripts/valr_request.py` — it handles signing automatically when
 `VALR_API_KEY` and `VALR_API_SECRET` are set.
 
 ## API Key Permissions
@@ -33,7 +33,7 @@ Generate API keys in your VALR account settings. 2FA must be enabled first.
 
 All non-public endpoints require HMAC-SHA512 signed requests. The signature
 covers the timestamp, HTTP method, path, request body, and subaccount ID (if
-any). **`scripts/valr_request.py` handles all authentication automatically** —
+any). **`{baseDir}/scripts/valr_request.py` handles all authentication automatically** —
 do not construct signed requests manually. Never build your own curl commands,
 HTTP requests, or code that references `VALR_API_KEY` or `VALR_API_SECRET`.
 Always use the script.
@@ -55,7 +55,7 @@ API keys on VALR are issued either on the **main account** or on a specific
   | `X-VALR-SUB-ACCOUNT-ID` | The target subaccount's ID |
 
   The subaccount ID must also be appended to the signing string (after the
-  body). `scripts/valr_request.py` handles both via the `--subaccount-id` flag.
+  body). `{baseDir}/scripts/valr_request.py` handles both via the `--subaccount-id` flag.
 
 **Subaccount key** (`isSubAccount: true`)
 - Automatically scoped to the subaccount it was issued on.
@@ -65,7 +65,7 @@ API keys on VALR are issued either on the **main account** or on a specific
 To check which type of key you are using:
 
 ```bash
-python3 scripts/valr_request.py GET /v1/account/api-keys/current
+python3 {baseDir}/scripts/valr_request.py GET /v1/account/api-keys/current
 ```
 
 The `isSubAccount` field in the response indicates whether the key is scoped to

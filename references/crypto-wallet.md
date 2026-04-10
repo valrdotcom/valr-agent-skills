@@ -1,7 +1,7 @@
 # Crypto Wallet Reference
 
 > **Always call the API.** Do not answer from the examples in this file —
-> call the endpoint via `valr_request.py` every time.
+> call the endpoint via `{baseDir}/scripts/valr_request.py` every time.
 
 ## Permissions
 
@@ -26,7 +26,7 @@
 | List whitelisted addresses | `GET /v1/wallet/crypto/address-book` | All currencies |
 | List whitelisted addresses (currency) | `GET /v1/wallet/crypto/address-book/{currency}` | Filtered to one currency |
 | List service providers | `GET /v1/wallet/crypto/service-providers` | For beneficiary info on withdrawals |
-| Unified transaction ledger (deposits, withdrawals, trades, etc.) | See `references/history.md` | `GET /v1/account/transactionhistory` with `transactionTypes` filter |
+| Unified transaction ledger (deposits, withdrawals, trades, etc.) | See `{baseDir}/references/history.md` | `GET /v1/account/transactionhistory` with `transactionTypes` filter |
 
 ---
 
@@ -39,7 +39,7 @@ Returns the deposit address for the specified currency.
 | Parameter | In | Required | Notes |
 |---|---|---|---|
 | `currency` | path | Yes | Currency code, e.g. `BTC`, `ETH`, `XRP` |
-| `networkType` | query | No | Network to use. Defaults to the currency's `defaultNetworkType` from `references/currencies.md`. |
+| `networkType` | query | No | Network to use. Defaults to the currency's `defaultNetworkType` from `{baseDir}/references/currencies.md`. |
 
 ### Response (`200 OK`)
 
@@ -58,7 +58,7 @@ Returns the deposit address for the specified currency.
 | `networkType` | string | Network for this address |
 
 To check which networks a currency supports for deposits, see
-`references/currencies.md` — look at the `supportedNetworks` array and the
+`{baseDir}/references/currencies.md` — look at the `supportedNetworks` array and the
 `deposit` boolean on each network.
 
 ---
@@ -107,7 +107,7 @@ Returns deposit history records, optionally filtered by currency and date range.
 
 For a unified ledger view of all transaction types including deposits, use
 `GET /v1/account/transactionhistory` with `transactionTypes=BLOCKCHAIN_RECEIVE` —
-see `references/history.md`.
+see `{baseDir}/references/history.md`.
 
 ---
 
@@ -175,10 +175,10 @@ endpoint to track progress.
 1. **Check withdrawal config** — call `GET /v1/wallet/crypto/{currency}/withdraw`
    to verify `isActive` is `true` and the amount meets `minimumWithdrawAmount`.
 2. **Check your balance** — call `GET /v1/account/balances` (see
-   `references/account.md`) to confirm sufficient `available` balance.
+   `{baseDir}/references/account.md`) to confirm sufficient `available` balance.
 3. **Verify the network** — if specifying `networkType`, ensure it matches the
    destination address. Mismatched network and address can cause loss of funds.
-   To look up supported networks for a currency, see `references/currencies.md`.
+   To look up supported networks for a currency, see `{baseDir}/references/currencies.md`.
 
 ### Request
 
@@ -306,7 +306,7 @@ status response (see [Check Withdrawal Status](#check-withdrawal-status)).
 
 For a unified ledger view of all transaction types including withdrawals, use
 `GET /v1/account/transactionhistory` with `transactionTypes=BLOCKCHAIN_SEND` —
-see `references/history.md`.
+see `{baseDir}/references/history.md`.
 
 ---
 
